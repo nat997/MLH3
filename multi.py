@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt 
 from sklearn import linear_model #modèle linéaire
 from sklearn.metrics import mean_squared_error, r2_score #métriques d'évaluation
+from sklearn.model_selection import train_test_split
+
 prices = pd.read_csv("../data/price_availability.csv", sep=";")
 listings = pd.read_csv("../data/listings_final.csv", sep=";")
 listings = listings.drop(589)  
@@ -20,8 +22,6 @@ for i, row in X.iterrows():
 
 #convert into numpy array
 Y = np.asarray(Y)
-
-from sklearn.model_selection import train_test_split
 X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.30, random_state=42)
 X_train.shape, y_train.shape, X_test.shape, y_test.shape
 
