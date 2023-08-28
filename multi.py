@@ -36,3 +36,23 @@ regr.fit(X_train.values, y_train)
 #what do you think about the results ?
 print('Coefficients beta_j : \n', regr.coef_)
 print('Coefficients INTERCEPT beta_0 : \n', regr.intercept_)
+
+X_test
+y_test
+
+#compute y_pred
+Y_pred = regr.predict(X_test)
+len(Y_pred)
+
+Y_pred
+
+y_test
+
+#afficher l'erreur des moindres carrées sur l'ensemble d'entrainement ainsi que le R2
+print("Mean squared error: %.2f"
+      % mean_squared_error(y_test, Y_pred))
+# Coefficient de détermination R2
+print('Variance score: %.2f' % r2_score(y_test, Y_pred))
+
+#compute the RMSE for more intuitive results
+np.sqrt(19631.83)
