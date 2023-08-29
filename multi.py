@@ -34,6 +34,8 @@ regr = linear_model.LinearRegression()
 regr.fit(X_train.values, y_train)
 
 #what do you think about the results ?
+#regr coef represent la coefficient de changement entre chaque unite de la collone je pense c Bj dansl a formule 
+#regr intercept represent un valeur negatif ? je pense c'est du modele de regression B0 dans la formule
 print('Coefficients beta_j : \n', regr.coef_)
 print('Coefficients INTERCEPT beta_0 : \n', regr.intercept_)
 
@@ -54,5 +56,6 @@ print("Mean squared error: %.2f"
 # Coefficient de détermination R2
 print('Variance score: %.2f' % r2_score(y_test, Y_pred))
 
-#compute the RMSE for more intuitive results
+#compute the RMSE for more intuitive results IN 17
 np.sqrt(19631.83)
+
