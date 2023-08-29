@@ -17,7 +17,9 @@ for i, row in X.iterrows():
     y = 0
     ID = int(row["listing_id"])
     subset = prices[prices["listing_id"] == ID]
-    y = subset["local_price"].mean()
+    # Calcul de la moyenne des prix locaux (local_price)
+    y = subset["local_price"].mean() 
+    
     Y.append(y)
 
 #convert into numpy array
@@ -67,3 +69,10 @@ print('Variance score: %.2f' % r2_score(y_test, Y_pred))
 #compute the RMSE for more intuitive results IN 17
 np.sqrt(19631.83)
 
+
+
+
+
+
+
+#############################################
