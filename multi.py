@@ -38,7 +38,15 @@ regr.fit(X_train.values, y_train)
 #regr intercept represent un valeur negatif ? je pense c'est du modele de regression B0 dans la formule
 print('Coefficients beta_j : \n', regr.coef_)
 print('Coefficients INTERCEPT beta_0 : \n', regr.intercept_)
+#Coefficients beta_j : 
+# [2.52164236e-06 3.27051274e+01 1.39869362e+01 7.80156818e+01]
+#Coefficients INTERCEPT beta_0 : 
+# -80.85554900336902
 
+#coef listing_id très proche de zéro  , alors il a très peu d'impact sur la prédiction du prix 2.52164236e-06
+#coef person_capacity est associée à une prédiction de prix plus élevée pour l'appartement 3.27051274e+01
+#coef bedrooms est un peu moins enlevee que person_capacity 1.39869362e+01
+#coef bathrooms suggère qu'une augmentation du nombre de salles de bains est associée à une prédiction de prix plus élevée 7.80156818e+01
 X_test
 y_test
 
