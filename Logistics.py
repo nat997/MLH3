@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score, auc, log_loss, roc_auc_score, confusion_matrix, classification_report, roc_curve
-from sklearn.feature_selection import RFE
+from sklearn.feature_selection import RFE, RFECV
 # Load the dataset
 titanic_data_test = pd.read_csv("../data/test.csv",sep=",")
 titanic_data_train = pd.read_csv("../data/train.csv",sep=",")
@@ -104,11 +104,11 @@ titanic_filtered['IsMinor'] = (titanic_filtered['Age'] < 16).astype(int)
 print(titanic_filtered.head())
 #fonction pour les plots
 def plot_survivors(data, feature_columns, feature_labels, title, filename, palette=None):
-    survivors = [data[data[col] == 1]['Survived'].sum() for col in feature_columns]
-    sns.barplot(x=feature_labels, y=survivors, palette=palette)
+    survivor_rates = [data[data[col] == 1]['Survived'].mean() for col in feature_columns]
+    sns.barplot(x=feature_labels, y=survivor_rates, palette=palette)
     plt.title(title)
     plt.xlabel('Feature')
-    plt.ylabel('Number of Survivors')
+    plt.ylabel('Survivors rate')
     plt.savefig(filename)
 
 # for Pclass
@@ -124,24 +124,24 @@ plot_survivors(titanic_filtered, feature_columns_embarked, feature_labels_embark
               'Number of Survivors by Embarkation Point', "survivors_by_embarked.png", "viridis")
 
 # for Traveling Alone feature
+travel_alone_survivor_rate = titanic_filtered[titanic_filtered['TravelAlone'] == 0]['Survived'].mean()
+not_travel_alone_survivor_rate = 1 - travel_alone_survivor_rate
 feature_labels_alone = ['Not Traveling Alone', 'Traveling Alone']
-travel_alone_survivors = titanic_filtered['Survived'].sum() - titanic_filtered[titanic_filtered['TravelAlone'] == 0]['Survived'].sum()
-not_travel_alone_survivors = titanic_filtered[titanic_filtered['TravelAlone'] == 0]['Survived'].sum()
-sns.barplot(x=feature_labels_alone, y=[not_travel_alone_survivors, travel_alone_survivors])
-plt.title('Number of Survivors by Traveling Status')
+sns.barplot(x=feature_labels_alone, y=[not_travel_alone_survivor_rate, travel_alone_survivor_rate])
+plt.title('Survivor Rate by Traveling Status')
 plt.xlabel('Traveling Status')
-plt.ylabel('Number of Survivors')
+plt.ylabel('Survivor Rate')
 plt.savefig("survivors_by_travel_alone.png")
 
 
 # for Gender distribution of survivors
+female_survivor_rate = titanic_filtered[titanic_filtered['Sex_female'] == 1]['Survived'].mean()
+male_survivor_rate = titanic_filtered[titanic_filtered['Sex_male'] == 1]['Survived'].mean()
 feature_labels_gender = ['Female', 'Male']
-female_survivors = titanic_filtered[titanic_filtered['Sex_female'] == 1]['Survived'].sum()
-male_survivors = titanic_filtered[titanic_filtered['Sex_male'] == 1]['Survived'].sum()
-sns.barplot(x=feature_labels_gender, y=[female_survivors, male_survivors], palette="pastel")
-plt.title('Number of Survivors by Gender')
+sns.barplot(x=feature_labels_gender, y=[female_survivor_rate, male_survivor_rate], palette="pastel")
+plt.title('Survivor Rate by Gender')
 plt.xlabel('Gender')
-plt.ylabel('Number of Survivors')
+plt.ylabel('Survivor Rate')
 plt.savefig("survivors_by_gender.png")
 
 
