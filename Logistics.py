@@ -123,17 +123,6 @@ feature_labels_embarked = ['Cherbourg (C)', 'Queenstown (Q)', 'Southampton (S)']
 plot_survivors(titanic_filtered, feature_columns_embarked, feature_labels_embarked, 
               'Number of Survivors by Embarkation Point', "survivors_by_embarked.png", "viridis")
 
-# for Traveling Alone feature
-travel_alone_survivor_rate = titanic_filtered[titanic_filtered['TravelAlone'] == 0]['Survived'].mean()
-not_travel_alone_survivor_rate = 1 - travel_alone_survivor_rate
-feature_labels_alone = ['Not Traveling Alone', 'Traveling Alone']
-sns.barplot(x=feature_labels_alone, y=[not_travel_alone_survivor_rate, travel_alone_survivor_rate])
-plt.title('Survivor Rate by Traveling Status')
-plt.xlabel('Traveling Status')
-plt.ylabel('Survivor Rate')
-plt.savefig("survivors_by_travel_alone.png")
-
-
 # for Gender distribution of survivors
 female_survivor_rate = titanic_filtered[titanic_filtered['Sex_female'] == 1]['Survived'].mean()
 male_survivor_rate = titanic_filtered[titanic_filtered['Sex_male'] == 1]['Survived'].mean()
@@ -144,7 +133,16 @@ plt.xlabel('Gender')
 plt.ylabel('Survivor Rate')
 plt.savefig("survivors_by_gender.png")
 
-
+# for Traveling Alone feature
+travel_alone_survivor_rate = titanic_filtered[titanic_filtered['TravelAlone'] == 0]['Survived'].mean()
+traveling_alone_survivor_rate = titanic_filtered[titanic_filtered['TravelAlone'] == 1]['Survived'].mean()
+plt.figure(figsize=(6, 4))
+colors = ['dodgerblue', 'orange']
+sns.barplot(x=['Not Traveling Alone', 'Traveling Alone'], y=[travel_alone_survivor_rate, traveling_alone_survivor_rate], palette=colors)
+plt.title('Survivor Rate by Traveling Status')
+plt.xlabel('Traveling Status')
+plt.ylabel('Survivor Rate')
+plt.savefig("survivors_by_travel_alone.png")
 #################
 X = titanic_filtered.drop(['Survived'], axis=1)
 y = titanic_filtered["Survived"]
