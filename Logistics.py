@@ -4,7 +4,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, auc, log_loss, roc_auc_score, confusion_matrix, classification_report, roc_curve
 from sklearn.feature_selection import RFE
 # Load the dataset
 titanic_data_test = pd.read_csv("../data/test.csv",sep=",")
@@ -102,10 +102,9 @@ plt.savefig("age_feature_distributio.png")
 #add the "IsMinor" variable to your data (a person is considered a minor if they are under 16)
 titanic_filtered['IsMinor'] = (titanic_filtered['Age'] < 16).astype(int)
 print(titanic_filtered.head())
-
+#fonction pour les plots
 def plot_survivors(data, feature_columns, feature_labels, title, filename, palette=None):
     survivors = [data[data[col] == 1]['Survived'].sum() for col in feature_columns]
-
     sns.barplot(x=feature_labels, y=survivors, palette=palette)
     plt.title(title)
     plt.xlabel('Feature')
@@ -147,17 +146,61 @@ plt.savefig("survivors_by_gender.png")
 
 
 #################
-# Assuming titanic_filtered is your DataFrame
-X = titanic_filtered.drop(['Survived', 'Cabin'], axis=1)
+X = titanic_filtered.drop(['Survived'], axis=1)
 y = titanic_filtered["Survived"]
-logisticreg = LogisticRegression(max_iter=1000)  # Increased max_iter for convergence
+logisticreg = LogisticRegression(max_iter=1000) 
 X_4_features = titanic_filtered[['Pclass_1', 'Pclass_2', 'Sex_male', 'IsMinor']]
 X_8_features = titanic_filtered[['Age', 'TravelAlone', 'Pclass_1', 'Pclass_2', 'Embarked_C', 'Embarked_S', 'Sex_male', 'IsMinor']]
-
-# Model with 4 features
 logisticreg.fit(X_4_features, y)
 y_pred_4 = logisticreg.predict(X_4_features)
-
-# Model with 8 features
 logisticreg.fit(X_8_features, y)
 y_pred_8 = logisticreg.predict(X_8_features)
+
+# Split data 
+X4_train, X4_test, y4_train, y4_test = train_test_split(X_4_features, y, test_size=0.2, random_state=42)
+X8_train, X8_test, y8_train, y8_test = train_test_split(X_8_features, y, test_size=0.2, random_state=42)
+
+# Train model on 4 features
+logisticreg.fit(X4_train, y4_train)
+# Predict for 4 features
+y4_pred = logisticreg.predict(X4_test)
+y4_pred_proba = logisticreg.predict_proba(X4_test)[:, 1]
+
+# Train model on 8 features
+logisticreg.fit(X8_train, y8_train)
+# Predict for 8 features
+y8_pred = logisticreg.predict(X8_test)
+y8_pred_proba = logisticreg.predict_proba(X8_test)[:, 1]
+
+### https://stackoverflow.com/questions/25009284/how-to-plot-roc-curve-in-python
+
+# Calculate the ROC curve for 4 features
+fpr_4, tpr_4, thresholds_4 = roc_curve(y4_test, y4_pred_proba)
+roc_auc_4 = auc(fpr_4, tpr_4)
+
+# Calculate the ROC curve for 8 features
+fpr_8, tpr_8, thresholds_8 = roc_curve(y8_test, y8_pred_proba)
+roc_auc_8 = auc(fpr_8, tpr_8)
+
+# Plot
+plt.figure(figsize=(10, 6))
+plt.plot(fpr_4, tpr_4, color='blue', label='ROC curve for 4 features (area = %0.2f)' % roc_auc_4)
+plt.plot(fpr_8, tpr_8, color='green', label='ROC curve for 8 features (area = %0.2f)' % roc_auc_8)
+plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Receiver Operating Characteristic (ROC) Curve')
+plt.legend(loc="lower right")
+plt.savefig("ROC.png")
+
+# Evaluate 
+print("4 Features Model :")
+print("Accuracy:", accuracy_score(y4_test, y4_pred))
+print("Log Loss:", log_loss(y4_test, y4_pred_proba))
+print("AUC:", roc_auc_score(y4_test, y4_pred_proba))
+print("\n8 Features Model :")
+print("Accuracy:", accuracy_score(y8_test, y8_pred))
+print("Log Loss:", log_loss(y8_test, y8_pred_proba))
+print("AUC:", roc_auc_score(y8_test, y8_pred_proba))
